@@ -1,106 +1,118 @@
 const BASE_PANELS_TRANSFORMS = "translate(-50%, -50%) ";
 // const INITIAL_X_ROTATIONS = [180, 135, 225, 90, 270, 45, 315, 0, 360];
-const INITIAL_ROTATIONS = [
-    {x:0, y:0},
-    {x:0, y:45},
-    {x:0, y:90},
-    {x:0, y:135},
-    {x:0, y:225},
-    {x:45, y:0},
-    {x:90, y:0},
-    {x:135, y:0},
+const INITIAL_POSITIONS = [
+    {x:0, y:0, z:200},
+    {x:0, y:0, z:-200},
+    {x:200, y:0, z:0},
+    {x:-200, y:0, z:0},
+    {x:0, y:200, z:0},
+    {x:0, y:-200, z:0},
 ];
 
+var mouseDown = false;
+
+var circleRadius = 200;
+
+// function getZIndexes(xRota) {
+//     let zIndexes = [];
+//     for (r of xRota) {
+//         let rRad = {x: r.x * Math.PI / 180, y: r.y * Math.PI / 180};
+
+//         let xProj = Math.cos(rRad.x);
+//         let yProj = Math.cos(rRad.y) * xProj;
+//         let zIndex = Math.round(yProj * 100); 
+//         zIndexes.push(zIndex);
+//     }
+//     return zIndexes;
+// }
+
+let panSection = document.querySelector("#panSection");
 let panels = document.querySelectorAll(".panel");
-let panelsRotation = [...INITIAL_ROTATIONS]
-
-function getZIndexes(xRota) {
-    let zIndexes = [];
-    for (r of xRota) {
-        let rRad = {x: r.x * Math.PI / 180, y: r.y * Math.PI / 180};
-
-        let xProj = Math.cos(rRad.x);
-        let yProj = Math.cos(rRad.y) * xProj;
-        let zIndex = Math.round(yProj * 100); 
-        zIndexes.push(zIndex);
-    }
-    return zIndexes;
-}
+// let panelsRotation = [...INITIAL_ROTATIONS]
+let panelsRotation = INITIAL_POSITIONS.map(pos => ({x: 0, y: 0}));
+// let panelsPositions = INITIAL_POSITIONS.map(pos => ({x: pos.x, y: pos.y, z: pos.z}));
 
 function updatePanels() {
-    panels.forEach((panel, k) => {
-        let xAng = panelsRotation[k].x;
-        let yAng = panelsRotation[k].y;
-        // panel.style.transform = `
-        //     ${BASE_PANELS_TRANSFORMS} 
-        //     rotateX(${xAng}deg) 
-        //     rotate3d(0, ${Math.sin(xAng* Math.PI / 180)}, ${Math.cos(xAng* Math.PI / 180)}, ${yAng}deg)
-        // `;
-        const matrix = getRotationMatrix(xAng, yAng);
-        const matrixStr = `matrix3d(${matrix.join(',')})`;
+    panels.forEach((panel, index) => {
+        let initialPos = INITIAL_POSITIONS[index];
+        let t = rotateYThenX(initialPos, panelsRotation[index].y, panelsRotation[index].x);
+        t.x -= 100;
+        t.y -= 100;
+        panel.style.transform = `
+        translateY(${t.y}px)
+        translateX(${t.x}px)
+        translateZ(${t.z}px)
+        rotateX(${panelsRotation[index].x}deg)
+        rotateY(${panelsRotation[index].y}deg)
+        `
+                // translate3D(-100px, -100px, ${0}px)
 
-        panel.style.transform = `${BASE_PANELS_TRANSFORMS} ${matrixStr}`;
-        panel.style.zIndex = getZIndexes(panelsRotation)[k];
-    });
+        // panel.style.zIndex = getZIndexes(panelsRotation)[index];
+})
 }
 
-
-// Apply base transform
 updatePanels();
 
-let curInd = 0;
-
-function process() {
+function update() {
     updatePanels();
-    panelsRotation = panelsRotation.map((r, k) => {
-        let newR = {...r, x:r.x+1, y:r.y};
-        newR.x = newR.x % 360;
-        newR.y = newR.y % 360;
-        return newR;
+
+    // for (let i = 0; i < panelsRotation.length; i++) {
+    //     panelsRotation[i].x += 1;
+    //     panelsRotation[i].y += 1;
+    // }
+
+    requestAnimationFrame(update);
+}
+requestAnimationFrame(update);
+
+
+function degreesToRadians(degrees) {
+    return degrees * Math.PI / 180;
+}
+
+function rotateYThenX(point, angleYDeg, angleXDeg) {
+    const [x, y, z] = [point.x, point.y, point.z];
+
+    // Convert angles to radians
+    const angleY = degreesToRadians(angleYDeg);
+    const angleX = degreesToRadians(angleXDeg);
+
+    // Rotation around Y axis
+    const cosY = Math.cos(angleY);
+    const sinY = Math.sin(angleY);
+
+    const x1 = x * cosY + z * sinY;
+    const y1 = y;
+    const z1 = -x * sinY + z * cosY;
+
+    // Rotation around X axis
+    const cosX = Math.cos(angleX);
+    const sinX = Math.sin(angleX);
+
+    const x2 = x1;
+    const y2 = y1 * cosX - z1 * sinX;
+    const z2 = y1 * sinX + z1 * cosX;
+
+    // return [x2, y2, z2];
+    return {x: x2, y: y2, z: z2};
+}
+
+panSection.addEventListener('mousedown' , (e) => {
+    mouseDown = true;
+    panSection.style.cursor = "grabbing";
+})
+
+panSection.addEventListener('mouseup' , (e) => {
+    mouseDown = false;
+    panSection.style.cursor = "grab";
+});
+
+panSection.addEventListener('mousemove' , (e) => {
+    if (!mouseDown) return;
+    let deltaX = e.movementX;
+    let deltaY = -e.movementY;
+    panelsRotation.forEach((rotation, index) => {
+        rotation.x += deltaY * 0.1; // Adjust sensitivity as needed
+        rotation.y += deltaX * 0.1; // Adjust sensitivity as needed
     });
-    requestAnimationFrame(process);
-}
-
-// requestAnimationFrame(process);
-
-function degreesToRadians(deg) {
-    return deg * Math.PI / 180;
-}
-
-function getRotationMatrix(xDeg, yDeg) {
-    const x = degreesToRadians(xDeg);
-    const y = degreesToRadians(yDeg);
-
-    const cx = Math.cos(x), sx = Math.sin(x);
-    const cy = Math.cos(y), sy = Math.sin(y);
-
-    // Rotation around X
-    const Rx = [
-        1, 0,  0, 0,
-        0, cx, -sx, 0,
-        0, sx, cx, 0,
-        0, 0,  0, 1,
-    ];
-
-    // Rotation around Y
-    const Ry = [
-        cy, 0, sy, 0,
-        0,  1, 0,  0,
-        -sy,0, cy, 0,
-        0,  0, 0,  1,
-    ];
-
-    // Multiply Ry * Rx (matrix multiplication)
-    const result = new Array(16).fill(0);
-    for (let row = 0; row < 4; row++) {
-        for (let col = 0; col < 4; col++) {
-            for (let i = 0; i < 4; i++) {
-                result[row * 4 + col] += Ry[row * 4 + i] * Rx[i * 4 + col];
-            }
-        }
-    }
-
-    return result;
-}
-
-
+});
