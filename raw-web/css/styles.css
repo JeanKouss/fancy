@@ -19,8 +19,8 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 200px;
-    height: 200px;
+    width: 100px;
+    height: 100px;
     border-radius: 1rem;
     transform-style: preserve-3d;
     transform-origin: 50% 50% 0;
@@ -28,7 +28,7 @@
 }
 
 .panel * {
-    border-radius: 1rem;
+    border-radius: 10%;
     border: 2px solid black;
 }
 
