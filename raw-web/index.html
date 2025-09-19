@@ -1,31 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./css/reset.css">
     <link rel="stylesheet" href="./css/styles.css">
-    <title>Document</title>
+    <title>Sphère Interactive</title>
 </head>
 <body>
-    <section id="panSection" class="full-page">
-        <div id="" class="panel">
-            <div class="front"></div>
-            <div class="back"></div>
+    <div class="info">
+        Glissez pour faire tourner la sphère<br>
+        Survolez les éléments pour les agrandir
+    </div>
+
+    <div class="sphere-container">
+        <div class="sphere" id="sphere">
+            <!-- Les éléments seront générés par JavaScript -->
         </div>
-        <div id="" class="panel">
-            <div class="front"></div>
-            <div class="back"></div>
-        </div>
-        <div id="" class="panel">
-            <div class="front"></div>
-            <div class="back"></div>
-        </div>
-        <div id="" class="panel">
-            <div class="front"></div>
-            <div class="back"></div>
-        </div>
-    </section>
-    <script src="./js/script-d.js"></script>
+    </div>
+
+    <div class="controls">
+        <button class="control-btn" onclick="autoRotate()">Auto Rotation</button>
+        <button class="control-btn" onclick="resetRotation()">Reset</button>
+        <button class="control-btn" onclick="randomizeColors()">Couleurs</button>
+    </div>
+    <script src="./js/script.js"></script>
 </body>
 </html>

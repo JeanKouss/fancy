@@ -1,0 +1,37 @@
+html {
+    /* --sky-blue: #8ecae6ff;
+    --blue-green: #219ebcff;
+    --prussian-blue: #023047ff;
+    --selective-yellow: #ffb703ff;
+    --ut-orange: #fb8500ff; */
+
+    
+    --col1: #023047;
+    --col2: #219ebc;
+    --col3: #8ecae6;
+    --col4: #fb8500;
+    --col5: #ffb703;
+    --col6: #fff8f0;
+
+
+    background-color: var(--col6);
+
+    /* font-family: "Saira", sans-serif; */
+    font-family: "Lexend Deca", sans-serif;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.scrollbar-hidden {
+    overflow: auto;
+    scrollbar-width: none; /* For Firefox */
+    -ms-overflow-style: none; /* For Internet Explorer and Edge */
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+    display: none; /* For Chrome, Safari, and Opera */
+}
